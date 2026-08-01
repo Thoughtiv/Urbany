@@ -1,14 +1,14 @@
 FROM node:20-slim AS deps
 WORKDIR /app
 COPY package*.json ./
-# Use npm install in the container for better compatibility with the existing lockfile and legacy peer dependency resolution.
-# Keep dev dependencies in this stage because Next.js build needs the TypeScript/toolchain packages.
+# Install dependencies in a way that matches the local verification path.
 RUN npm install --legacy-peer-deps --no-audit --no-fund
 
 FROM node:20-slim AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
 FROM node:20-slim AS runner
