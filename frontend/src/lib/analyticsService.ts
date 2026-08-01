@@ -573,11 +573,18 @@ export async function fetchPropertyAnalytics(
     // In production, would call API:
     // const response = await fetch('/api/analytics/property', {...})
 
+    const [walkability, pricePrediction, marketTrends, neighborhood] = await Promise.all([
+      generateWalkabilityScore(latitude, longitude),
+      generatePricePrediction(price, latitude, longitude),
+      generateMarketTrends(latitude, longitude),
+      generateNeighborhoodScore(latitude, longitude),
+    ])
+
     return {
-      walkability: generateWalkabilityScore(latitude, longitude),
-      pricePrediction: generatePricePrediction(price, latitude, longitude),
-      marketTrends: generateMarketTrends(latitude, longitude),
-      neighborhood: generateNeighborhoodScore(latitude, longitude),
+      walkability,
+      pricePrediction,
+      marketTrends,
+      neighborhood,
     }
   } catch (error) {
     console.error('Error fetching property analytics:', error)
