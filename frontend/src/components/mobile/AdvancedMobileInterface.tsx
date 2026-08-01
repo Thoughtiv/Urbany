@@ -140,10 +140,14 @@ const AdvancedMobileInterface = ({
   // Handle voice commands
   const handleVoiceCommand = useCallback((command: VoiceCommandPayload) => {
     switch (command.action) {
-      case 'search':
-        searchStore.setQuery(command.query)
-        searchStore.search()
+      case 'search': {
+        const query = command.query?.trim() ?? ''
+        if (!query) break
+
+        searchStore.setQuery(query)
+        void searchStore.search()
         break
+      }
 
       case 'navigate':
         if (command.location) {
