@@ -2,8 +2,8 @@ FROM node:20-alpine AS deps
 WORKDIR /app
 RUN apk add --no-cache python3 make g++
 COPY package*.json ./
-# Use npm install directly to avoid the npm parser issue seen in Cloud Build.
-RUN npm install --legacy-peer-deps --no-audit --no-fund --ignore-scripts
+# Use npm 10 with a clean dependency install to avoid the npm parser issue seen in Cloud Build.
+RUN npm install -g npm@10.8.2 && npm install --legacy-peer-deps --no-audit --no-fund --ignore-scripts
 
 FROM node:20-alpine AS builder
 WORKDIR /app

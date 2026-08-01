@@ -1,0 +1,189 @@
+﻿{
+  "version": "1.0.0",
+  "name": "realestate-frontend",
+  "problems": [
+    "missing: @apollo/client@^3.8.5, required by realestate-frontend@1.0.0",
+    "missing: @headlessui/react@^1.7.17, required by realestate-frontend@1.0.0",
+    "missing: @heroicons/react@^2.0.18, required by realestate-frontend@1.0.0",
+    "missing: @react-three/drei@^9.100.0, required by realestate-frontend@1.0.0",
+    "missing: @react-three/fiber@^8.14.4, required by realestate-frontend@1.0.0",
+    "missing: @tanstack/react-query@^5.25.0, required by realestate-frontend@1.0.0",
+    "missing: autoprefixer@^10.4.16, required by realestate-frontend@1.0.0",
+    "missing: axios@^1.6.2, required by realestate-frontend@1.0.0",
+    "missing: class-variance-authority@^0.7.0, required by realestate-frontend@1.0.0",
+    "missing: clsx@^2.0.0, required by realestate-frontend@1.0.0",
+    "missing: date-fns@^2.30.0, required by realestate-frontend@1.0.0",
+    "missing: embla-carousel-autoplay@^7.1.0, required by realestate-frontend@1.0.0",
+    "missing: embla-carousel-react@^7.1.0, required by realestate-frontend@1.0.0",
+    "missing: framer-motion@^10.12.16, required by realestate-frontend@1.0.0",
+    "missing: graphql-request@^6.0.0, required by realestate-frontend@1.0.0",
+    "missing: graphql@^16.8.1, required by realestate-frontend@1.0.0",
+    "missing: lucide-react@^0.312.0, required by realestate-frontend@1.0.0",
+    "missing: maplibre-gl@^3.6.0, required by realestate-frontend@1.0.0",
+    "missing: next@^14.0.3, required by realestate-frontend@1.0.0",
+    "missing: postcss@^8.4.32, required by realestate-frontend@1.0.0",
+    "missing: react-dom@^18.2.0, required by realestate-frontend@1.0.0",
+    "missing: react-hot-toast@^2.4.1, required by realestate-frontend@1.0.0",
+    "missing: react@^18.2.0, required by realestate-frontend@1.0.0",
+    "missing: three@^0.160.0, required by realestate-frontend@1.0.0",
+    "missing: zustand@^4.4.2, required by realestate-frontend@1.0.0"
+  ],
+  "dependencies": {
+    "@apollo/client": {
+      "required": "^3.8.5",
+      "missing": true,
+      "problems": [
+        "missing: @apollo/client@^3.8.5, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "@headlessui/react": {
+      "missing": true,
+      "problems": [
+        "missing: @headlessui/react@^1.7.17, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "@heroicons/react": {
+      "missing": true,
+      "problems": [
+        "missing: @heroicons/react@^2.0.18, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "@react-three/drei": {
+      "missing": true,
+      "problems": [
+        "missing: @react-three/drei@^9.100.0, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "@react-three/fiber": {
+      "missing": true,
+      "problems": [
+        "missing: @react-three/fiber@^8.14.4, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "@tanstack/react-query": {
+      "missing": true,
+      "problems": [
+        "missing: @tanstack/react-query@^5.25.0, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "autoprefixer": {
+      "missing": true,
+      "problems": [
+        "missing: autoprefixer@^10.4.16, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "axios": {
+      "missing": true,
+      "problems": [
+        "missing: axios@^1.6.2, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "class-variance-authority": {
+      "missing": true,
+      "problems": [
+        "missing: class-variance-authority@^0.7.0, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "clsx": {
+      "missing": true,
+      "problems": [
+        "missing: clsx@^2.0.0, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "date-fns": {
+      "missing": true,
+      "problems": [
+        "missing: date-fns@^2.30.0, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "embla-carousel-autoplay": {
+      "missing": true,
+      "problems": [
+        "missing: embla-carousel-autoplay@^7.1.0, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "embla-carousel-react": {
+      "missing": true,
+      "problems": [
+        "missing: embla-carousel-react@^7.1.0, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "framer-motion": {
+      "missing": true,
+      "problems": [
+        "missing: framer-motion@^10.12.16, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "graphql-request": {
+      "missing": true,
+      "problems": [
+        "missing: graphql-request@^6.0.0, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "graphql": {
+      "missing": true,
+      "problems": [
+        "missing: graphql@^16.8.1, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "lucide-react": {
+      "missing": true,
+      "problems": [
+        "missing: lucide-react@^0.312.0, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "maplibre-gl": {
+      "missing": true,
+      "problems": [
+        "missing: maplibre-gl@^3.6.0, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "next": {
+      "missing": true,
+      "problems": [
+        "missing: next@^14.0.3, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "postcss": {
+      "missing": true,
+      "problems": [
+        "missing: postcss@^8.4.32, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "react-dom": {
+      "missing": true,
+      "problems": [
+        "missing: react-dom@^18.2.0, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "react-hot-toast": {
+      "missing": true,
+      "problems": [
+        "missing: react-hot-toast@^2.4.1, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "react": {
+      "missing": true,
+      "problems": [
+        "missing: react@^18.2.0, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "three": {
+      "missing": true,
+      "problems": [
+        "missing: three@^0.160.0, required by realestate-frontend@1.0.0"
+      ]
+    },
+    "zustand": {
+      "missing": true,
+      "problems": [
+        "missing: zustand@^4.4.2, required by realestate-frontend@1.0.0"
+      ]
+    }
+  },
+  "error": {
+    "code": "ELSPROBLEMS",
+    "summary": "missing: @apollo/client@^3.8.5, required by realestate-frontend@1.0.0\r\nmissing: @headlessui/react@^1.7.17, required by realestate-frontend@1.0.0\r\nmissing: @heroicons/react@^2.0.18, required by realestate-frontend@1.0.0\r\nmissing: @react-three/drei@^9.100.0, required by realestate-frontend@1.0.0\r\nmissing: @react-three/fiber@^8.14.4, required by realestate-frontend@1.0.0\r\nmissing: @tanstack/react-query@^5.25.0, required by realestate-frontend@1.0.0\r\nmissing: autoprefixer@^10.4.16, required by realestate-frontend@1.0.0\r\nmissing: axios@^1.6.2, required by realestate-frontend@1.0.0\r\nmissing: class-variance-authority@^0.7.0, required by realestate-frontend@1.0.0\r\nmissing: clsx@^2.0.0, required by realestate-frontend@1.0.0\r\nmissing: date-fns@^2.30.0, required by realestate-frontend@1.0.0\r\nmissing: embla-carousel-autoplay@^7.1.0, required by realestate-frontend@1.0.0\r\nmissing: embla-carousel-react@^7.1.0, required by realestate-frontend@1.0.0\r\nmissing: framer-motion@^10.12.16, required by realestate-frontend@1.0.0\r\nmissing: graphql-request@^6.0.0, required by realestate-frontend@1.0.0\r\nmissing: graphql@^16.8.1, required by realestate-frontend@1.0.0\r\nmissing: lucide-react@^0.312.0, required by realestate-frontend@1.0.0\r\nmissing: maplibre-gl@^3.6.0, required by realestate-frontend@1.0.0\r\nmissing: next@^14.0.3, required by realestate-frontend@1.0.0\r\nmissing: postcss@^8.4.32, required by realestate-frontend@1.0.0\r\nmissing: react-dom@^18.2.0, required by realestate-frontend@1.0.0\r\nmissing: react-hot-toast@^2.4.1, required by realestate-frontend@1.0.0\r\nmissing: react@^18.2.0, required by realestate-frontend@1.0.0\r\nmissing: three@^0.160.0, required by realestate-frontend@1.0.0\r\nmissing: zustand@^4.4.2, required by realestate-frontend@1.0.0",
+    "detail": ""
+  }
+}
