@@ -1,17 +1,18 @@
-FROM node:20.19.0-slim AS deps
+FROM node:20-alpine AS deps
 WORKDIR /app
+RUN apk add --no-cache python3 make g++
 COPY package*.json ./
 # Use npm install directly to avoid the npm parser issue seen in Cloud Build.
 RUN npm install --legacy-peer-deps --no-audit --no-fund --ignore-scripts
 
-FROM node:20.19.0-slim AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
-FROM node:20.19.0-slim AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
