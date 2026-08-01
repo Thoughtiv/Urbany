@@ -1,12 +1,8 @@
 FROM node:20.19.0-slim AS deps
 WORKDIR /app
 COPY package*.json ./
-# Prefer a lockfile-based install when available; otherwise fall back to npm install.
-RUN if [ -f package-lock.json ]; then \
-      npm ci --legacy-peer-deps --no-audit --no-fund --ignore-scripts; \
-    else \
-      npm install --legacy-peer-deps --no-audit --no-fund --ignore-scripts; \
-    fi
+# Use npm install directly to avoid the npm parser issue seen in Cloud Build.
+RUN npm install --legacy-peer-deps --no-audit --no-fund --ignore-scripts
 
 FROM node:20.19.0-slim AS builder
 WORKDIR /app
