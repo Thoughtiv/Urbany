@@ -97,7 +97,7 @@ export const usePropertyStore = create<PropertyStore>((set, get) => ({
     set({ favoritesLoading: true })
     try {
       const response = await apiClient.getFavorites()
-      const favoriteIds = new Set(response.properties?.map((p: Property) => p.id) || [])
+      const favoriteIds = new Set<string>(response.properties?.map((p: Property) => p.id) || [])
       set({ favorites: favoriteIds, favoritesLoading: false })
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to fetch favorites'
