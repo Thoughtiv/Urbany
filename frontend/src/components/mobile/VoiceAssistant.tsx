@@ -12,17 +12,24 @@ interface VoiceCommandParameters {
   location?: string
 }
 
-interface VoiceCommand {
-  command: string
+interface VoiceCommandPayload {
   action: string
+  query?: string
+  location?: { lat: number; lng: number }
+  level?: number
+  propertyId?: string
+}
+
+interface VoiceCommand extends VoiceCommandPayload {
+  command: string
   parameters?: VoiceCommandParameters
   confidence: number
 }
 
 interface VoiceAssistantProps {
-  onCommand?: (command: VoiceCommand) => void
+  onCommand?: (command: VoiceCommandPayload) => void
   onClose?: () => void
-  onCommandExecuted?: (command: VoiceCommand) => void
+  onCommandExecuted?: (command: VoiceCommandPayload) => void
   onSpeechResult?: (transcript: string, isFinal: boolean) => void
   onError?: (error: string) => void
 }
@@ -312,9 +319,27 @@ const VoiceAssistant = ({
       const voiceCommand = parseVoiceCommand(command.toLowerCase().trim())
 
       if (voiceCommand) {
-        onCommand?.(voiceCommand)
+        const normalizedAction = voiceCommand.action.startsWith('search_')
+          ? 'search'
+          : voiceCommand.action === 'navigate_next' || voiceCommand.action === 'navigate_previous'
+            ? 'navigate'
+            : voiceCommand.action === 'add_favorite'
+              ? 'show_property'
+              : 'search'
+
+        const payload: VoiceCommandPayload = {
+          action: normalizedAction,
+          query: voiceCommand.action.startsWith('search_')
+            ? command.toLowerCase().trim()
+            : undefined,
+          location: undefined,
+          level: undefined,
+          propertyId: undefined,
+        }
+
+        onCommand?.(payload)
         await executeVoiceCommand(voiceCommand)
-        onCommandExecuted?.(voiceCommand)
+        onCommandExecuted?.(payload)
 
         const response = getCommandResponse(voiceCommand)
         speak(response)

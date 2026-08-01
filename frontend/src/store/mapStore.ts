@@ -12,6 +12,18 @@ type SmartNotificationRecord = SmartNotificationInput & {
   timestamp: number
 }
 
+type GestureEventRecord = {
+  type: string
+  timestamp: number
+  data?: any
+}
+
+type GestureEventInput = {
+  type: string
+  data?: any
+  [key: string]: any
+}
+
 interface MapStore {
   // Map viewport state
   viewport: ViewportState
@@ -61,11 +73,7 @@ interface MapStore {
   // Voice & Gesture State
   voiceActive: boolean
   gestureMode: boolean
-  gestureHistory: Array<{
-    type: string
-    timestamp: number
-    data: any
-  }>
+  gestureHistory: GestureEventRecord[]
 
   // AR State
   arMode: boolean
@@ -132,7 +140,7 @@ interface MapStore {
 
   setVoiceActive: (active: boolean) => void
   setGestureMode: (enabled: boolean) => void
-  addGestureEvent: (gesture: { type: string; data: any }) => void
+  addGestureEvent: (gesture: GestureEventInput) => void
   clearGestureHistory: () => void
 
   setARMode: (enabled: boolean, property?: Property) => void
@@ -432,11 +440,15 @@ export const useMapStore = create<MapStore>((set, get) => ({
   setGestureMode: (enabled: boolean) =>
     set({ gestureMode: enabled }),
 
-  addGestureEvent: (gesture: { type: string; data: any }) =>
+  addGestureEvent: (gesture: GestureEventInput) =>
     set((state) => ({
       gestureHistory: [
         ...state.gestureHistory.slice(-9), // Keep last 10 gestures
-        { ...gesture, timestamp: Date.now() }
+        {
+          type: gesture.type,
+          data: gesture.data ?? gesture,
+          timestamp: Date.now()
+        }
       ]
     })),
 

@@ -112,11 +112,15 @@ const EnhancedMobileApp: React.FC<EnhancedMobileAppProps> = ({
     console.log('Voice command received:', command)
 
     switch (command.action) {
-      case 'search':
-        searchStore.setQuery(command.query || '')
-        searchStore.search()
-        onSearch?.(command.query || '')
+      case 'search': {
+        const query = typeof command.query === 'string' ? command.query.trim() : ''
+        if (!query) break
+
+        searchStore.setQuery(query)
+        void searchStore.search()
+        onSearch?.(query)
         break
+      }
 
       case 'navigate':
         if (command.location) {
