@@ -170,7 +170,7 @@ const EnhancedMobileApp: React.FC<EnhancedMobileAppProps> = ({
   }
 
   // Handle smart notifications
-  const handleNotification = (notification: any) => {
+  const handleNotification = (notification: { type: 'geofence' | 'price' | 'new-listing' | 'geofence-enter' | 'price-alert'; message: string; data?: any }) => {
     console.log('Smart notification:', notification)
 
     // Add to notification history
