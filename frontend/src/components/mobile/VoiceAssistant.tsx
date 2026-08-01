@@ -106,7 +106,7 @@ const VoiceAssistant = ({
 
   // Initialize speech synthesis
   const initializeSynthesis = useCallback(() => {
-    if ('speechSynthesis' in window) {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       synthRef.current = window.speechSynthesis
     }
   }, [])
@@ -393,41 +393,6 @@ const VoiceAssistant = ({
 
     recognitionRef.current = recognition
   }, [isSupported, onSpeechResult, onError, processVoiceCommand])
-
-  // Initialize speech synthesis
-  const initializeSynthesis = useCallback(() => {
-    if ('speechSynthesis' in window) {
-      synthRef.current = window.speechSynthesis
-    }
-  }, [])
-
-  // Speak text
-  const speak = useCallback((text: string, options: Partial<SpeechSynthesisUtterance> = {}) => {
-    if (!synthRef.current) return
-
-    synthRef.current.cancel()
-
-    const utterance = new SpeechSynthesisUtterance(text)
-
-    utterance.rate = options.rate || 0.9
-    utterance.pitch = options.pitch || 1
-    utterance.volume = options.volume || 0.8
-    utterance.lang = options.lang || 'en-US'
-
-    const voices = synthRef.current.getVoices()
-    const preferredVoice = voices.find((voice: SpeechSynthesisVoice) =>
-      voice.name.toLowerCase().includes('female') ||
-      voice.name.toLowerCase().includes('samantha') ||
-      voice.name.toLowerCase().includes('alex')
-    )
-
-    if (preferredVoice) {
-      utterance.voice = preferredVoice
-    }
-
-    synthRef.current.speak(utterance)
-  }, [])
-
 
   // Start listening
   const startListening = useCallback(() => {
