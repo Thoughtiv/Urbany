@@ -74,7 +74,7 @@ interface MapStore {
   activeGeofences: Set<string>
   smartNotifications: Array<{
     id: string
-    type: 'geofence' | 'price' | 'new-listing'
+    type: 'geofence' | 'price' | 'new-listing' | 'geofence-enter' | 'price-alert'
     message: string
     timestamp: number
     data: any
@@ -140,7 +140,7 @@ interface MapStore {
   setGeofencingEnabled: (enabled: boolean) => void
   addActiveGeofence: (geofenceId: string) => void
   removeActiveGeofence: (geofenceId: string) => void
-  addSmartNotification: (notification: { type: 'geofence' | 'price' | 'new-listing'; message: string; data: any }) => void
+  addSmartNotification: (notification: { type: 'geofence' | 'price' | 'new-listing' | 'geofence-enter' | 'price-alert'; message: string; data: any }) => void
   clearSmartNotifications: () => void
 
   setPWAInstalled: (installed: boolean) => void
@@ -473,7 +473,7 @@ export const useMapStore = create<MapStore>((set, get) => ({
       return { activeGeofences: newGeofences }
     }),
 
-  addSmartNotification: (notification: { type: 'geofence' | 'price' | 'new-listing'; message: string; data: any }) =>
+  addSmartNotification: (notification: { type: 'geofence' | 'price' | 'new-listing' | 'geofence-enter' | 'price-alert'; message: string; data: any }) =>
     set((state) => ({
       smartNotifications: [
         ...state.smartNotifications.slice(-19), // Keep last 20 notifications
