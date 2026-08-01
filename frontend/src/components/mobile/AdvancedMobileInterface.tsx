@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, type ReactNode } from 'react'
 import { Property } from '@/types'
 import { useMapStore } from '@/store/mapStore'
 import { useSearchStore } from '@/store/searchStore'
@@ -16,10 +16,26 @@ import AdvancedGestures from './AdvancedGestures'
 import SmartNotifications from './SmartNotifications'
 
 interface AdvancedMobileInterfaceProps {
-  children: React.ReactNode
+  children: ReactNode
   userLocation?: { latitude: number; longitude: number }
   savedProperties: Property[]
   onPropertySelect?: (property: Property) => void
+}
+
+interface VoiceCommandPayload {
+  action: string
+  query?: string
+  location?: { lat: number; lng: number }
+  level?: number
+  propertyId?: string
+}
+
+interface GesturePayload {
+  type: string
+  scale?: number
+  deltaX?: number
+  deltaY?: number
+  direction?: string
 }
 
 interface MobileState {
@@ -31,12 +47,12 @@ interface MobileState {
   biometricEnabled: boolean
 }
 
-const AdvancedMobileInterface: React.FC<AdvancedMobileInterfaceProps> = ({
+const AdvancedMobileInterface = ({
   children,
   userLocation,
   savedProperties,
   onPropertySelect
-}) => {
+}: AdvancedMobileInterfaceProps) => {
   const [mobileState, setMobileState] = useState<MobileState>({
     isOfflineMode: false,
     isVoiceActive: false,
@@ -80,7 +96,7 @@ const AdvancedMobileInterface: React.FC<AdvancedMobileInterfaceProps> = ({
   }, [])
 
   // Handle gesture events
-  const handleGesture = useCallback((gesture: any) => {
+  const handleGesture = useCallback((gesture: GesturePayload) => {
     switch (gesture.type) {
       case 'pinch':
         // Handle zoom gestures
@@ -92,9 +108,7 @@ const AdvancedMobileInterface: React.FC<AdvancedMobileInterfaceProps> = ({
 
       case 'pan':
         // Handle pan gestures for map movement
-        if (Math.abs(gesture.deltaX) > 50 || Math.abs(gesture.deltaY) > 50) {
-          // Convert screen coordinates to map coordinates
-          // This would need actual map coordinate conversion
+        if (Math.abs(gesture.deltaX ?? 0) > 50 || Math.abs(gesture.deltaY ?? 0) > 50) {
           console.log('Pan gesture:', gesture)
         }
         break
@@ -124,7 +138,7 @@ const AdvancedMobileInterface: React.FC<AdvancedMobileInterfaceProps> = ({
   }, [mapStore])
 
   // Handle voice commands
-  const handleVoiceCommand = useCallback((command: any) => {
+  const handleVoiceCommand = useCallback((command: VoiceCommandPayload) => {
     switch (command.action) {
       case 'search':
         searchStore.setQuery(command.query)
@@ -167,7 +181,7 @@ const AdvancedMobileInterface: React.FC<AdvancedMobileInterfaceProps> = ({
   }, [searchStore, mapStore, savedProperties, onPropertySelect, openARViewer])
 
   // Handle biometric authentication
-  const handleBiometricSuccess = useCallback((credential: any) => {
+  const handleBiometricSuccess = useCallback((credential: unknown) => {
     setMobileState(prev => ({ ...prev, biometricEnabled: true }))
     console.log('Biometric authentication successful:', credential)
   }, [])
@@ -177,11 +191,8 @@ const AdvancedMobileInterface: React.FC<AdvancedMobileInterfaceProps> = ({
   }, [])
 
   // Handle notifications
-  const handleNotification = useCallback((notification: any) => {
-    // Handle different types of notifications
+  const handleNotification = useCallback((notification: unknown) => {
     console.log('Smart notification:', notification)
-
-    // Could show in-app notification, update UI, etc.
   }, [])
 
   // Only render advanced features on mobile devices

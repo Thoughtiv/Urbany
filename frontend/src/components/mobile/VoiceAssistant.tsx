@@ -5,10 +5,17 @@ import { useMapStore } from '@/store/mapStore'
 import { useSearchStore } from '@/store/searchStore'
 import { isMobileDevice, triggerHapticFeedback } from '@/lib/mobileUtils'
 
+interface VoiceCommandParameters {
+  maxPrice?: number
+  propertyType?: string
+  bedrooms?: number
+  location?: string
+}
+
 interface VoiceCommand {
   command: string
   action: string
-  parameters?: any
+  parameters?: VoiceCommandParameters
   confidence: number
 }
 
@@ -18,11 +25,6 @@ interface VoiceAssistantProps {
   onCommandExecuted?: (command: VoiceCommand) => void
   onSpeechResult?: (transcript: string, isFinal: boolean) => void
   onError?: (error: string) => void
-}
-
-interface SpeechRecognitionResultLike {
-  isFinal: boolean
-  transcript: string
 }
 
 interface SpeechRecognitionResultItemLike {
@@ -41,95 +43,66 @@ interface SpeechRecognitionErrorEventLike {
   error: string
 }
 
-const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
+type SpeechRecognitionLike = {
+  continuous: boolean
+  interimResults: boolean
+  lang: string
+  maxAlternatives: number
+  onstart?: () => void
+  onresult?: (event: SpeechRecognitionEventLike) => void
+  onerror?: (event: SpeechRecognitionErrorEventLike) => void
+  onend?: () => void
+  start: () => void
+  stop: () => void
+  abort: () => void
+}
+
+type SpeechRecognitionBrowserCtor = new () => SpeechRecognitionLike
+
+const VoiceAssistant = ({
   onCommand,
   onClose,
   onCommandExecuted,
   onSpeechResult,
   onError
-}) => {
+}: VoiceAssistantProps) => {
   const [isListening, setIsListening] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [transcript, setTranscript] = useState('')
   const [isSupported, setIsSupported] = useState(false)
 
-  const recognitionRef = useRef<any>(null)
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null)
   const synthRef = useRef<SpeechSynthesis | null>(null)
+  const wakeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const { setViewport } = useMapStore()
-  const { search, setFilters, results } = useSearchStore()
+  const { search, setFilters } = useSearchStore()
 
   // Check if speech recognition is supported
   useEffect(() => {
     const checkSupport = () => {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-      const speechSynthesis = 'speechSynthesis' in window
+      const supportedConstructor = getSpeechRecognition()
+      const speechSynthesis = typeof window !== 'undefined' && 'speechSynthesis' in window
 
-      setIsSupported(!!SpeechRecognition && speechSynthesis)
+      setIsSupported(!!supportedConstructor && speechSynthesis)
     }
 
     checkSupport()
   }, [])
 
   // Initialize speech recognition
-  const getSpeechRecognition = () => (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-
-  const initializeRecognition = useCallback(() => {
-    if (!isSupported) return
-
-    const SpeechRecognition = getSpeechRecognition()
-
-    if (recognitionRef.current) {
-      recognitionRef.current.abort()
+  const getSpeechRecognition = (): SpeechRecognitionBrowserCtor | null => {
+    if (typeof window === 'undefined') {
+      return null
     }
 
-    const recognition = new SpeechRecognition()
-    recognition.continuous = true
-    recognition.interimResults = true
-    recognition.lang = 'en-US'
-    recognition.maxAlternatives = 1
-
-    recognition.onstart = () => {
-      setIsListening(true)
-      setTranscript('')
-      triggerHapticFeedback('light')
+    const browserWindow = window as typeof window & {
+      SpeechRecognition?: SpeechRecognitionBrowserCtor
+      webkitSpeechRecognition?: SpeechRecognitionBrowserCtor
     }
 
-    recognition.onresult = (event: SpeechRecognitionEventLike) => {
-      let finalTranscript = ''
-      let interimTranscript = ''
-
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const result = event.results[i]
-        if (result.isFinal) {
-          finalTranscript += result[0].transcript
-        } else {
-          interimTranscript += result[0].transcript
-        }
-      }
-
-      const currentTranscript = finalTranscript || interimTranscript
-      setTranscript(currentTranscript)
-
-      onSpeechResult?.(currentTranscript, !!finalTranscript)
-
-      if (finalTranscript) {
-        processVoiceCommand(finalTranscript)
-      }
-    }
-
-    recognition.onerror = (event: SpeechRecognitionErrorEventLike) => {
-      console.error('Speech recognition error:', event.error)
-      setIsListening(false)
-      onError?.(`Speech recognition error: ${event.error}`)
-    }
-
-    recognition.onend = () => {
-      setIsListening(false)
-    }
-
-    recognitionRef.current = recognition
-  }, [isSupported, onSpeechResult, onError])
+    return browserWindow.SpeechRecognition ?? browserWindow.webkitSpeechRecognition ?? null
+  }
 
   // Initialize speech synthesis
   const initializeSynthesis = useCallback(() => {
@@ -142,24 +115,22 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const speak = useCallback((text: string, options: Partial<SpeechSynthesisUtterance> = {}) => {
     if (!synthRef.current) return
 
-    // Cancel any ongoing speech
     synthRef.current.cancel()
 
     const utterance = new SpeechSynthesisUtterance(text)
 
-    // Set default options
     utterance.rate = options.rate || 0.9
     utterance.pitch = options.pitch || 1
     utterance.volume = options.volume || 0.8
     utterance.lang = options.lang || 'en-US'
 
-    // Set voice (prefer female voice for assistant)
     const voices = synthRef.current.getVoices()
-    const preferredVoice = voices.find(voice =>
+    const preferredVoice = voices.find((voice: SpeechSynthesisVoice) =>
       voice.name.toLowerCase().includes('female') ||
       voice.name.toLowerCase().includes('samantha') ||
       voice.name.toLowerCase().includes('alex')
     )
+
     if (preferredVoice) {
       utterance.voice = preferredVoice
     }
@@ -167,39 +138,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     synthRef.current.speak(utterance)
   }, [])
 
-  // Process voice command
-  const processVoiceCommand = useCallback(async (command: string) => {
-    setIsProcessing(true)
-
-    try {
-      const voiceCommand = parseVoiceCommand(command.toLowerCase().trim())
-
-      if (voiceCommand) {
-        onCommand?.(voiceCommand)
-        await executeVoiceCommand(voiceCommand)
-        onCommandExecuted?.(voiceCommand)
-
-        // Provide audio feedback
-        const response = getCommandResponse(voiceCommand)
-        speak(response)
-      } else {
-        speak("I'm sorry, I didn't understand that command. Try saying 'find houses under $500k' or 'show me apartments'.")
-      }
-    } catch (error) {
-      console.error('Voice command execution error:', error)
-      speak("Sorry, I encountered an error processing your request.")
-      onError?.('Command execution failed')
-    } finally {
-      setIsProcessing(false)
-    }
-  }, [onCommandExecuted, onError, speak])
-
   // Parse voice command
   const parseVoiceCommand = useCallback((command: string): VoiceCommand | null => {
-    // Price-based search
     const priceMatch = command.match(/(?:find|show|search).*?(?:under|below|less than)?\s*\$?(\d+)(?:k|000)?/)
     if (priceMatch) {
-      const price = parseInt(priceMatch[1]) * (command.includes('k') ? 1000 : 1)
+      const price = parseInt(priceMatch[1], 10) * (command.includes('k') ? 1000 : 1)
       return {
         command,
         action: 'search_price',
@@ -208,7 +151,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }
     }
 
-    // Property type search
     const typeMatches = {
       'houses?': 'house',
       'apartments?': 'apartment',
@@ -228,10 +170,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }
     }
 
-    // Bedroom search
     const bedroomMatch = command.match(/(\d+)\s*bed(?:room)?/)
     if (bedroomMatch) {
-      const bedrooms = parseInt(bedroomMatch[1])
+      const bedrooms = parseInt(bedroomMatch[1], 10)
       return {
         command,
         action: 'search_bedrooms',
@@ -240,7 +181,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }
     }
 
-    // Location search
     const locationMatch = command.match(/(?:in|near|around)\s+(.+)/)
     if (locationMatch) {
       return {
@@ -251,7 +191,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }
     }
 
-    // Navigation commands
     if (command.includes('next') || command.includes('show next')) {
       return {
         command,
@@ -268,7 +207,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }
     }
 
-    // Favorites
     if (command.includes('favorite') || command.includes('save')) {
       return {
         command,
@@ -277,7 +215,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }
     }
 
-    // Help
     if (command.includes('help') || command.includes('what can you do')) {
       return {
         command,
@@ -293,60 +230,63 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const executeVoiceCommand = useCallback(async (voiceCommand: VoiceCommand) => {
     switch (voiceCommand.action) {
       case 'search_price':
-        setFilters({ maxPrice: voiceCommand.parameters.maxPrice })
+        if (typeof voiceCommand.parameters?.maxPrice === 'number') {
+          setFilters({ maxPrice: voiceCommand.parameters.maxPrice })
+        }
         await search()
         break
 
       case 'search_type':
-        setFilters({ propertyTypes: [voiceCommand.parameters.propertyType] })
+        if (voiceCommand.parameters?.propertyType) {
+          setFilters({ propertyTypes: [voiceCommand.parameters.propertyType] })
+        }
         await search()
         break
 
       case 'search_bedrooms':
-        setFilters({ minBedrooms: voiceCommand.parameters.bedrooms })
+        if (typeof voiceCommand.parameters?.bedrooms === 'number') {
+          setFilters({ minBedrooms: voiceCommand.parameters.bedrooms })
+        }
         await search()
         break
 
       case 'search_location':
-        // This would need geocoding integration
-        console.log('Location search:', voiceCommand.parameters.location)
+        if (voiceCommand.parameters?.location) {
+          console.log('Location search:', voiceCommand.parameters.location)
+        }
         break
 
       case 'navigate_next':
-        // Navigate to next property
         console.log('Navigate to next property')
         break
 
       case 'navigate_previous':
-        // Navigate to previous property
         console.log('Navigate to previous property')
         break
 
       case 'add_favorite':
-        // Add current property to favorites
         console.log('Add to favorites')
         break
 
       case 'help':
-        // Show help
         break
     }
-  }, [setFilters, search])
+  }, [search, setFilters])
 
   // Get response for command
   const getCommandResponse = useCallback((command: VoiceCommand): string => {
     switch (command.action) {
       case 'search_price':
-        return `Searching for properties under $${command.parameters.maxPrice.toLocaleString()}`
+        return `Searching for properties under $${(command.parameters?.maxPrice ?? 0).toLocaleString()}`
 
       case 'search_type':
-        return `Finding ${command.parameters.propertyType}s for you`
+        return `Finding ${command.parameters?.propertyType ?? 'property'}s for you`
 
       case 'search_bedrooms':
-        return `Looking for ${command.parameters.bedrooms} bedroom properties`
+        return `Looking for ${command.parameters?.bedrooms ?? 0} bedroom properties`
 
       case 'search_location':
-        return `Searching in ${command.parameters.location}`
+        return `Searching in ${command.parameters?.location ?? 'the area'}`
 
       case 'navigate_next':
         return 'Showing next property'
@@ -364,6 +304,130 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         return 'Command executed successfully'
     }
   }, [])
+
+  const processVoiceCommand = useCallback(async (command: string) => {
+    setIsProcessing(true)
+
+    try {
+      const voiceCommand = parseVoiceCommand(command.toLowerCase().trim())
+
+      if (voiceCommand) {
+        onCommand?.(voiceCommand)
+        await executeVoiceCommand(voiceCommand)
+        onCommandExecuted?.(voiceCommand)
+
+        const response = getCommandResponse(voiceCommand)
+        speak(response)
+      } else {
+        speak("I'm sorry, I didn't understand that command. Try saying 'find houses under $500k' or 'show me apartments'.")
+      }
+    } catch (error) {
+      console.error('Voice command execution error:', error)
+      speak("Sorry, I encountered an error processing your request.")
+      onError?.('Command execution failed')
+    } finally {
+      setIsProcessing(false)
+    }
+  }, [executeVoiceCommand, getCommandResponse, onCommand, onCommandExecuted, onError, parseVoiceCommand, speak])
+
+  const initializeRecognition = useCallback(() => {
+    if (!isSupported) return
+
+    const SpeechRecognition = getSpeechRecognition()
+
+    if (!SpeechRecognition) {
+      return
+    }
+
+    if (recognitionRef.current) {
+      recognitionRef.current.abort()
+    }
+
+    const recognition = new SpeechRecognition() as SpeechRecognitionLike
+    recognition.continuous = true
+    recognition.interimResults = true
+    recognition.lang = 'en-US'
+    recognition.maxAlternatives = 1
+
+    recognition.onstart = () => {
+      setIsListening(true)
+      setTranscript('')
+      triggerHapticFeedback('light')
+    }
+
+    recognition.onresult = (event: SpeechRecognitionEventLike) => {
+      let finalTranscript = ''
+      let interimTranscript = ''
+
+      for (let i = event.resultIndex; i < event.results.length; i += 1) {
+        const result = event.results[i]
+        const currentItem = result[0]
+        if (!currentItem) continue
+
+        if (result.isFinal) {
+          finalTranscript += currentItem.transcript
+        } else {
+          interimTranscript += currentItem.transcript
+        }
+      }
+
+      const currentTranscript = finalTranscript || interimTranscript
+      setTranscript(currentTranscript)
+
+      onSpeechResult?.(currentTranscript, !!finalTranscript)
+
+      if (finalTranscript) {
+        void processVoiceCommand(finalTranscript)
+      }
+    }
+
+    recognition.onerror = (event: SpeechRecognitionErrorEventLike) => {
+      console.error('Speech recognition error:', event.error)
+      setIsListening(false)
+      onError?.(`Speech recognition error: ${event.error}`)
+    }
+
+    recognition.onend = () => {
+      setIsListening(false)
+    }
+
+    recognitionRef.current = recognition
+  }, [isSupported, onSpeechResult, onError, processVoiceCommand])
+
+  // Initialize speech synthesis
+  const initializeSynthesis = useCallback(() => {
+    if ('speechSynthesis' in window) {
+      synthRef.current = window.speechSynthesis
+    }
+  }, [])
+
+  // Speak text
+  const speak = useCallback((text: string, options: Partial<SpeechSynthesisUtterance> = {}) => {
+    if (!synthRef.current) return
+
+    synthRef.current.cancel()
+
+    const utterance = new SpeechSynthesisUtterance(text)
+
+    utterance.rate = options.rate || 0.9
+    utterance.pitch = options.pitch || 1
+    utterance.volume = options.volume || 0.8
+    utterance.lang = options.lang || 'en-US'
+
+    const voices = synthRef.current.getVoices()
+    const preferredVoice = voices.find((voice: SpeechSynthesisVoice) =>
+      voice.name.toLowerCase().includes('female') ||
+      voice.name.toLowerCase().includes('samantha') ||
+      voice.name.toLowerCase().includes('alex')
+    )
+
+    if (preferredVoice) {
+      utterance.voice = preferredVoice
+    }
+
+    synthRef.current.speak(utterance)
+  }, [])
+
 
   // Start listening
   const startListening = useCallback(() => {
@@ -419,22 +483,27 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     if (!isSupported || !isMobileDevice()) return
 
     const wakeWords = ['hey real estate', 'real estate', 'property finder']
-    let wakeTimeout: NodeJS.Timeout
 
-    const checkWakeWord = (transcript: string) => {
-      const lowerTranscript = transcript.toLowerCase()
+    const checkWakeWord = (recognizedText: string) => {
+      const lowerTranscript = recognizedText.toLowerCase()
       if (wakeWords.some(word => lowerTranscript.includes(word))) {
-        clearTimeout(wakeTimeout)
+        if (wakeTimeoutRef.current) {
+          clearTimeout(wakeTimeoutRef.current)
+        }
         speak('How can I help you find properties?')
-        // Auto-start listening after wake word
-        wakeTimeout = setTimeout(() => {
+        wakeTimeoutRef.current = setTimeout(() => {
           startListening()
         }, 1000)
       }
     }
 
-    // This would need continuous background listening
-    // For now, it's triggered by explicit start
+    void checkWakeWord
+
+    return () => {
+      if (wakeTimeoutRef.current) {
+        clearTimeout(wakeTimeoutRef.current)
+      }
+    }
   }, [isSupported, speak, startListening])
 
   return (

@@ -1,6 +1,17 @@
 import { create } from 'zustand'
 import { ViewportState, MapLayerConfig, Property } from '@/types'
 
+type SmartNotificationInput = {
+  type: 'geofence' | 'price' | 'new-listing' | 'geofence-enter' | 'price-alert'
+  message: string
+  data?: any
+}
+
+type SmartNotificationRecord = SmartNotificationInput & {
+  id: string
+  timestamp: number
+}
+
 interface MapStore {
   // Map viewport state
   viewport: ViewportState
@@ -72,13 +83,7 @@ interface MapStore {
   // Smart Features
   geofencingEnabled: boolean
   activeGeofences: Set<string>
-  smartNotifications: Array<{
-    id: string
-    type: 'geofence' | 'price' | 'new-listing' | 'geofence-enter' | 'price-alert'
-    message: string
-    timestamp: number
-    data: any
-  }>
+  smartNotifications: SmartNotificationRecord[]
 
   // PWA State
   pwaInstalled: boolean
@@ -140,7 +145,7 @@ interface MapStore {
   setGeofencingEnabled: (enabled: boolean) => void
   addActiveGeofence: (geofenceId: string) => void
   removeActiveGeofence: (geofenceId: string) => void
-  addSmartNotification: (notification: { type: 'geofence' | 'price' | 'new-listing' | 'geofence-enter' | 'price-alert'; message: string; data?: any }) => void
+  addSmartNotification: (notification: SmartNotificationInput) => void
   clearSmartNotifications: () => void
 
   setPWAInstalled: (installed: boolean) => void
@@ -473,11 +478,15 @@ export const useMapStore = create<MapStore>((set, get) => ({
       return { activeGeofences: newGeofences }
     }),
 
-  addSmartNotification: (notification: { type: 'geofence' | 'price' | 'new-listing' | 'geofence-enter' | 'price-alert'; message: string; data?: any }) =>
+  addSmartNotification: (notification: SmartNotificationInput) =>
     set((state) => ({
       smartNotifications: [
         ...state.smartNotifications.slice(-19), // Keep last 20 notifications
-        { ...notification, id: Date.now().toString(), timestamp: Date.now() }
+        {
+          ...notification,
+          id: Date.now().toString(),
+          timestamp: Date.now()
+        }
       ]
     })),
 
