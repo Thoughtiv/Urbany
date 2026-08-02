@@ -41,7 +41,7 @@ export function HeroSection() {
                 Get My Matches
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
-              <Link href="/auth/register" className="inline-flex items-center justify-center rounded-full border border-slate-300/50 bg-white/10 px-7 py-4 text-base font-semibold text-white transition hover:bg-white/15">
+              <Link href="/signup" className="inline-flex items-center justify-center rounded-full border border-slate-300/50 bg-white/10 px-7 py-4 text-base font-semibold text-white transition hover:bg-white/15">
                 Create Buyer Profile
               </Link>
             </div>

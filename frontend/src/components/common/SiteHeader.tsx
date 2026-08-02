@@ -27,14 +27,14 @@ export default function SiteHeader() {
           <Link href="/search" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
             Insights
           </Link>
-          <Link href="/auth/login" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+          <Link href="/login" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
             Login
           </Link>
         </nav>
 
         <div className="flex items-center gap-3">
           <Link
-            href="/auth/register"
+            href="/signup"
             className="hidden rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-sky-200/50 transition hover:bg-sky-700 md:inline-flex"
           >
             Create Buyer Profile
