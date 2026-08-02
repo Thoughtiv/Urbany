@@ -142,7 +142,7 @@ class ApiClient {
 
   // Auth endpoints
   async register(email: string, password: string, firstName: string, lastName: string) {
-    const { data } = await this.client.post('/auth/register', {
+    const { data } = await this.client.post('/api/auth/register', {
       email,
       password,
       firstName,
@@ -152,7 +152,7 @@ class ApiClient {
   }
 
   async login(email: string, password: string) {
-    const { data } = await this.client.post('/auth/login', { email, password })
+    const { data } = await this.client.post('/api/auth/login', { email, password })
     if (data.accessToken) {
       localStorage.setItem('auth_token', data.accessToken)
     }
@@ -160,46 +160,46 @@ class ApiClient {
   }
 
   async logout() {
-    await this.client.post('/auth/logout')
+    await this.client.post('/api/auth/logout')
     localStorage.removeItem('auth_token')
   }
 
   // User endpoints
   async getCurrentUser() {
-    const { data } = await this.client.get('/users/me')
+    const { data } = await this.client.get('/api/users/me')
     return data
   }
 
   async updateUser(updates: Record<string, unknown>) {
-    const { data } = await this.client.patch('/users/me', updates)
+    const { data } = await this.client.patch('/api/users/me', updates)
     return data
   }
 
   // Property endpoints
   async getProperties(filters?: Record<string, unknown>, page = 1, limit = 20) {
-    const { data } = await this.client.get('/properties', {
+    const { data } = await this.client.get('/api/properties', {
       params: { ...filters, page, limit },
     })
     return data
   }
 
   async getPropertyById(id: string) {
-    const { data } = await this.client.get(`/properties/${id}`)
+    const { data } = await this.client.get(`/api/properties/${id}`)
     return data
   }
 
   async createProperty(propertyData: Record<string, unknown>) {
-    const { data } = await this.client.post('/properties', propertyData)
+    const { data } = await this.client.post('/api/properties', propertyData)
     return data
   }
 
   async updateProperty(id: string, updates: Record<string, unknown>) {
-    const { data } = await this.client.patch(`/properties/${id}`, updates)
+    const { data } = await this.client.patch(`/api/properties/${id}`, updates)
     return data
   }
 
   async deleteProperty(id: string) {
-    const { data } = await this.client.delete(`/properties/${id}`)
+    const { data } = await this.client.delete(`/api/properties/${id}`)
     return data
   }
 
