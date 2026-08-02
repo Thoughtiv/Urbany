@@ -18,6 +18,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { MessagingModule } from './modules/messaging/messaging.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { HealthModule } from './modules/health/health.module';
 
 // Database entities
 import { User } from './modules/users/entities/user.entity';
@@ -92,6 +93,7 @@ import { PropertyImage } from './modules/properties/entities/property-image.enti
     MessagingModule,
     UploadModule,
     PaymentModule,
+    HealthModule,
   ],
 })
 export class AppModule {}
