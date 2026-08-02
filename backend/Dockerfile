@@ -10,12 +10,16 @@ COPY package*.json ./
 
 # Install dependencies
 # Prefer `npm ci` when a lockfile is present for reproducible builds.
-# Use `--legacy-peer-deps` to avoid peer dependency resolution failures in Cloud Build
+# Use `--legacy-peer-deps` to avoid peer dependency resolution failures in Cloud Build.
+# Do not skip install scripts here because native add-ons such as `bcrypt` need
+# their postinstall build step to complete in the runtime image.
 RUN if [ -f package-lock.json ]; then \
-      npm ci --ignore-scripts; \
+      npm ci --legacy-peer-deps; \
     else \
-      npm install --legacy-peer-deps --ignore-scripts; \
+      npm install --legacy-peer-deps; \
     fi
+
+RUN npm rebuild bcrypt
 
 # Copy application code
 COPY . .
