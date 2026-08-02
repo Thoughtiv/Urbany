@@ -9,7 +9,7 @@ import {
   OneToMany,
   Index,
 } from 'typeorm';
-import { ObjectType, Field, ID, Float, Int } from '@nestjs/graphql';
+import { ObjectType, Field, ID, Float, Int, registerEnumType } from '@nestjs/graphql';
 import GraphQLJSON from 'graphql-type-json';
 import { Point } from 'geojson';
 import { User } from '@modules/users/entities/user.entity';
@@ -31,6 +31,14 @@ export enum PropertyStatus {
   PENDING = 'pending',
   DELISTED = 'delisted',
 }
+
+registerEnumType(PropertyType, {
+  name: 'PropertyType',
+});
+
+registerEnumType(PropertyStatus, {
+  name: 'PropertyStatus',
+});
 
 @ObjectType()
 @Entity('properties')
