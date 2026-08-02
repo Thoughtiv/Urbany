@@ -222,18 +222,18 @@ export interface ViewportState {
 }
 
 export namespace GeoJSON {
-  interface FeatureCollection {
+  export interface FeatureCollection {
     type: 'FeatureCollection'
     features: Feature[]
   }
 
-  interface Feature {
+  export interface Feature {
     type: 'Feature'
     geometry: Geometry
     properties: Record<string, unknown>
   }
 
-  interface Geometry {
+  export interface Geometry {
     type: 'Point' | 'LineString' | 'Polygon' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon'
     coordinates: unknown
   }
