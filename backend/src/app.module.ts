@@ -42,6 +42,8 @@ import { PropertyImage } from './modules/properties/entities/property-image.enti
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
         entities: [User, Property, PropertyImage],
+        migrations: [join(__dirname, '..', 'database', 'migrations', '*{.ts,.js}')],
+        migrationsRun: configService.get('DB_MIGRATIONS') === 'true',
         synchronize: configService.get('DB_SYNCHRONIZE') === 'true',
         logging: configService.get('DB_LOGGING') === 'true',
       }),
