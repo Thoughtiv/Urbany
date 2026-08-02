@@ -13,14 +13,32 @@ const nextConfig = {
         hostname: '**.cloudinary.com',
       },
       {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.unsplash.com',
+      },
+      {
         protocol: 'http',
         hostname: 'localhost',
       },
     ],
   },
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
-    NEXT_PUBLIC_GEO_SERVICE_URL: process.env.NEXT_PUBLIC_GEO_SERVICE_URL || 'http://localhost:8001',
+    NEXT_PUBLIC_API_URL:
+      process.env.NEXT_PUBLIC_API_URL ||
+      (process.env.NODE_ENV === 'production'
+        ? 'https://realestate-backend-73kq77eo7q-el.a.run.app'
+        : 'http://localhost:3001'),
+    NEXT_PUBLIC_GRAPHQL_URL:
+      process.env.NEXT_PUBLIC_GRAPHQL_URL ||
+      (process.env.NODE_ENV === 'production'
+        ? 'https://realestate-backend-73kq77eo7q-el.a.run.app/graphql'
+        : 'http://localhost:3001/graphql'),
+    NEXT_PUBLIC_GEO_SERVICE_URL:
+      process.env.NEXT_PUBLIC_GEO_SERVICE_URL || 'http://localhost:8001',
     NEXT_PUBLIC_MAPBOX_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_TOKEN,
   },
   webpack: (config, options) => {
