@@ -10,6 +10,7 @@ import {
   Index,
 } from 'typeorm';
 import { ObjectType, Field, ID, Float, Int } from '@nestjs/graphql';
+import GraphQLJSON from 'graphql-type-json';
 import { Point } from 'geojson';
 import { User } from '@modules/users/entities/user.entity';
 import { PropertyImage } from './property-image.entity';
@@ -132,9 +133,9 @@ export class Property {
   @Column({ default: 0 })
   favorites: number;
 
-  @Field()
+  @Field(() => GraphQLJSON, { nullable: true })
   @Column({ type: 'jsonb', nullable: true })
-  metadata: {
+  metadata?: {
     taxRecords?: string;
     lastSalePrice?: number;
     lastSaleDate?: Date;
