@@ -116,9 +116,9 @@ export class Property {
   @Column({ type: 'text', nullable: true })
   features: string;
 
-  @Field()
+  @Field(() => [String], { nullable: true })
   @Column({ type: 'jsonb', nullable: true })
-  amenities: string[];
+  amenities?: string[];
 
   @Field(() => Float, { nullable: true })
   @Column('numeric', { precision: 10, scale: 2, nullable: true })
