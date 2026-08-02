@@ -8,6 +8,7 @@ import {
   BeforeInsert,
 } from 'typeorm';
 import { ObjectType, Field, ID } from '@nestjs/graphql';
+import GraphQLJSON from 'graphql-type-json';
 import * as bcrypt from 'bcrypt';
 import { Property } from '@modules/properties/entities/property.entity';
 
@@ -64,18 +65,18 @@ export class User {
   @Column('simple-array', { nullable: true })
   favoritePropertyIds: string[];
 
-  @Field()
+  @Field(() => GraphQLJSON, { nullable: true })
   @Column({ type: 'jsonb', nullable: true })
-  preferences: {
+  preferences?: {
     currency?: string;
     language?: string;
     notifications?: boolean;
     newsletter?: boolean;
   };
 
-  @Field()
+  @Field(() => GraphQLJSON, { nullable: true })
   @Column({ type: 'jsonb', nullable: true })
-  kycData: {
+  kycData?: {
     verified?: boolean;
     documentType?: string;
     documentNumber?: string;
