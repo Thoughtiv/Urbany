@@ -78,7 +78,10 @@ export default function DashboardPage() {
           </div>
         </Link>
 
-        <div className="card p-6 border-2 border-dashed border-gray-300 hover:border-primary-300 hover:bg-primary-50 transition-colors cursor-pointer group">
+        <Link
+          href="/properties/create"
+          className="card p-6 border-2 border-dashed border-gray-300 hover:border-primary-300 hover:bg-primary-50 transition-colors cursor-pointer group"
+        >
           <div className="flex items-start gap-4">
             <div className="p-3 bg-primary-100 rounded-lg group-hover:bg-primary-200 transition-colors">
               <Plus className="h-6 w-6 text-primary-600" />
@@ -88,7 +91,7 @@ export default function DashboardPage() {
               <p className="text-sm text-gray-600">Post your property for sale or rent</p>
             </div>
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* Saved Properties */}

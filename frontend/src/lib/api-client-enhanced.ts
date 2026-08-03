@@ -62,7 +62,12 @@ class ApiClient {
           localStorage.removeItem('auth_token')
           window.location.href = '/login'
         }
-        return Promise.reject(error)
+        const serverMessage = (error as any)?.response?.data?.message || (error as any)?.response?.data?.error
+        const message = serverMessage || error.message || 'Unauthorized'
+        const e = new Error(message)
+        ;(e as any).status = error.response?.status
+        ;(e as any).responseData = (error as any)?.response?.data
+        return Promise.reject(e)
       }
 
       // Implement retry logic for certain errors
@@ -76,7 +81,13 @@ class ApiClient {
         return this.client.request(config)
       }
 
-      return Promise.reject(error)
+      // If not retried or retry exhausted, surface friendly message
+      const serverMessage = (error as any)?.response?.data?.message || (error as any)?.response?.data?.error
+      const message = serverMessage || error.message || 'Request failed'
+      const e = new Error(message)
+      ;(e as any).status = error.response?.status
+      ;(e as any).responseData = (error as any)?.response?.data
+      return Promise.reject(e)
     }
 
     this.client.interceptors.request.use(requestInterceptor)

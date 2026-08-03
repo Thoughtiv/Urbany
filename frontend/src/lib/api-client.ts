@@ -48,14 +48,22 @@ class ApiClient {
     this.client.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
+        // Extract meaningful message from server response when possible
+        const serverMessage =
+          (error as any)?.response?.data?.message || (error as any)?.response?.data?.error
+        const message = serverMessage || error.message || 'Request failed'
+
         if (error.response?.status === 401) {
-          // Handle token refresh
           if (typeof window !== 'undefined') {
             localStorage.removeItem('auth_token')
             window.location.href = '/login'
           }
         }
-        return Promise.reject(error)
+
+        const e = new Error(message)
+        ;(e as any).status = error.response?.status
+        ;(e as any).responseData = (error as any)?.response?.data
+        return Promise.reject(e)
       }
     )
 
@@ -124,6 +132,14 @@ class ApiClient {
 
   async createProperty(propertyData: Record<string, unknown>) {
     const { data } = await this.client.post('/api/properties', propertyData)
+    return data
+  }
+
+  async addPropertyImage(propertyId: string, imageUrl: string, isPrimary = false) {
+    const { data } = await this.client.post(`/api/properties/${propertyId}/images`, {
+      imageUrl,
+      isPrimary,
+    })
     return data
   }
 

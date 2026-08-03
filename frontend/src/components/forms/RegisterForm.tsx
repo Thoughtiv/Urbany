@@ -97,8 +97,19 @@ export function RegisterForm() {
       addToast('Account created successfully!', 'success')
       router.push('/dashboard')
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Registration failed. Please try again.'
-      addToast(errorMessage, 'error')
+      const serverData = (err as any)?.responseData
+
+      // If server returned structured field errors, show them inline
+      if (serverData?.message && typeof serverData.message === 'object') {
+        if (Array.isArray(serverData.message)) {
+          addToast(serverData.message.join(', '), 'error')
+        } else {
+          setValidationErrors(serverData.message as Record<string, string>)
+        }
+      } else {
+        const errorMessage = err instanceof Error ? err.message : 'Registration failed. Please try again.'
+        addToast(errorMessage, 'error')
+      }
     }
   }
 
