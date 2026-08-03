@@ -24,6 +24,7 @@ import { HealthModule } from './modules/health/health.module';
 import { User } from './modules/users/entities/user.entity';
 import { Property } from './modules/properties/entities/property.entity';
 import { PropertyImage } from './modules/properties/entities/property-image.entity';
+import { AuthToken, OAuthProvider } from './modules/auth/entities/auth.entity';
 
 @Module({
   imports: [
@@ -41,7 +42,7 @@ import { PropertyImage } from './modules/properties/entities/property-image.enti
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [User, Property, PropertyImage],
+        entities: [User, Property, PropertyImage, AuthToken, OAuthProvider],
         migrations: [join(__dirname, 'database', 'migrations', '*{.ts,.js}')],
         migrationsRun: configService.get('DB_MIGRATIONS') === 'true',
         synchronize: configService.get('DB_SYNCHRONIZE') === 'true',
