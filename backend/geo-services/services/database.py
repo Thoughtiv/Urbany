@@ -1,5 +1,5 @@
 import os
-from sqlalchemy import create_engine, Column, String, Float, Integer, DateTime, JSON
+from sqlalchemy import create_engine, Column, String, Float, Integer, DateTime, JSON, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from geoalchemy2 import Geometry
@@ -54,7 +54,7 @@ class InfrastructurePoint(Base):
     latitude = Column(Float)
     longitude = Column(Float)
     location = Column(Geometry("POINT", srid=4326))
-    metadata = Column(JSON, nullable=True)
+    meta_data = Column("metadata", JSON, nullable=True)
     createdAt = Column(DateTime, default=datetime.utcnow)
 
 async def init_db():
@@ -63,7 +63,7 @@ async def init_db():
         logger.info("Initializing database connection...")
         # Create extension if not exists
         with engine.connect() as conn:
-            conn.execute("CREATE EXTENSION IF NOT EXISTS postgis")
+            conn.execute(text("CREATE EXTENSION IF NOT EXISTS postgis"))
             conn.commit()
         logger.info("✅ Database initialized successfully")
     except Exception as e:

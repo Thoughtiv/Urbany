@@ -1,1 +1,42 @@
-frontend/node_modules
+# Dependency directories
+node_modules/
+**/node_modules/
+
+# Next.js & Build outputs
+.next/
+**/.next/
+dist/
+**/dist/
+build/
+**/build/
+*.tsbuildinfo
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# Python / Virtual Environments
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Expo / Mobile artifacts
+.expo/
+**/.expo/
+*.apk
+*.aab
+*.ipa
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

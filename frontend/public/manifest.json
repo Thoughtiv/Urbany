@@ -1,0 +1,16 @@
+{
+  "name": "Urbany - Verified Plots, Real Legal Intelligence",
+  "short_name": "Urbany",
+  "description": "HMDA/DTCP-verified plots across Hyderabad's growth corridors, with legal intelligence built into every listing.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080a0c",
+  "theme_color": "#080a0c",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

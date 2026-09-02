@@ -2,6 +2,16 @@
  * Common utility functions for the real estate application
  */
 
+import { type ClassValue, clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+/**
+ * Merge Tailwind classes, resolving conflicts (used by shadcn/ui components)
+ */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
 /**
  * Format currency values
  */

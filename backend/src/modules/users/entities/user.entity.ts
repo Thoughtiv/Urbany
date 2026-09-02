@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
 import GraphQLJSON from 'graphql-type-json';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { Property } from '@modules/properties/entities/property.entity';
 
 export enum UserRole {

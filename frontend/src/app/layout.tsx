@@ -1,9 +1,11 @@
-import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import type { Metadata, Viewport } from 'next'
+import { Inter, JetBrains_Mono, Montserrat } from 'next/font/google'
 import { ApolloWrapper } from '@/components/providers/ApolloWrapper'
 import { ToastProvider } from '@/components/providers/ToastProvider'
 import SiteHeader from '@/components/common/SiteHeader'
 import SiteFooter from '@/components/common/SiteFooter'
+import { Preloader } from '@/components/preloader/Preloader'
+import { SmoothScrollProvider } from '@/components/providers/SmoothScrollProvider'
 import '@/styles/globals.css'
 
 const inter = Inter({
@@ -18,42 +20,58 @@ const jetbrainsMono = JetBrains_Mono({
   display: 'swap',
 })
 
+/** Display face for the giant hero wordmark — wide, geometric, architectural. */
+const montserrat = Montserrat({
+  variable: '--font-display',
+  subsets: ['latin'],
+  weight: ['800', '900'],
+  display: 'swap',
+})
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1.0,
+  maximumScale: 5.0,
+  themeColor: '#080a0c',
+}
+
 export const metadata: Metadata = {
-  title: 'HireBuyer - Find the Right Property',
+  title: 'Urbany - Verified Plots, Real Legal Intelligence',
   description:
-    'HireBuyer finds the best property matches using verified builder data, geospatial insights, and smart recommendations.',
+    'Urbany finds HMDA/DTCP-verified plots across Hyderabad’s growth corridors, with legal intelligence — HMDA, DTCP, EC, and TGRERA status — built into every listing.',
   keywords: [
     'real estate',
-    'property matching',
-    'builder credibility',
-    'investment properties',
+    'plot buying',
+    'HMDA verified plots',
+    'DTCP verified plots',
+    'legal intelligence',
     'hyderabad real estate',
+    'growth corridors',
     'PWA',
     'search',
   ],
-  viewport: 'width=device-width, initial-scale=1.0, maximum-scale=5.0',
   robots: 'index, follow',
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://hirebuyer.example.com',
-    title: 'HireBuyer',
-    description: 'Find the right property with trusted builder ratings and smart match recommendations.',
-    siteName: 'HireBuyer',
+    url: 'https://urbany.example.com',
+    title: 'Urbany',
+    description: 'Verified plots across Hyderabad’s growth corridors, backed by real legal intelligence.',
+    siteName: 'Urbany',
     images: [
       {
-        url: 'https://hirebuyer.example.com/og-image.png',
+        url: 'https://urbany.example.com/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'HireBuyer',
+        alt: 'Urbany',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'HireBuyer',
-    description: 'Find the right property with trusted builder ratings and smart match recommendations.',
-    images: ['https://hirebuyer.example.com/twitter-image.png'],
+    title: 'Urbany',
+    description: 'Verified plots across Hyderabad’s growth corridors, backed by real legal intelligence.',
+    images: ['https://urbany.example.com/twitter-image.png'],
   },
 }
 
@@ -66,12 +84,15 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
-        <meta name="theme-color" content="#0f172a" />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} min-h-screen bg-slate-50 text-slate-900 antialiased`}>
+      <body
+        className={`${inter.variable} ${jetbrainsMono.variable} ${montserrat.variable} min-h-screen bg-background text-foreground antialiased`}
+      >
         <ApolloWrapper>
           <ToastProvider>
+            <SmoothScrollProvider />
+            <Preloader />
             <div className="min-h-screen">
               <SiteHeader />
               {children}

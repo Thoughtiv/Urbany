@@ -1,0 +1,186 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type PropertyImage {
+  id: ID!
+  url: String!
+  description: String!
+  isPrimary: Boolean!
+  order: Float!
+  createdAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Property {
+  id: ID!
+  title: String!
+  description: String!
+  price: Float!
+  type: PropertyType!
+  status: PropertyStatus!
+  address: String!
+  city: String!
+  state: String!
+  postalCode: String!
+  country: String!
+  latitude: Float!
+  longitude: Float!
+  bedrooms: Int!
+  bathrooms: Int!
+  areaSquareFeet: Float!
+  yearBuilt: Float!
+  features: String!
+  amenities: [String!]
+  pricePerSquareFoot: Float
+  views: Float!
+  favorites: Float!
+  metadata: JSON
+  owner: User!
+  images: [PropertyImage!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum PropertyType {
+  APARTMENT
+  HOUSE
+  COMMERCIAL
+  LAND
+  OFFICE
+  VILLA
+}
+
+enum PropertyStatus {
+  AVAILABLE
+  SOLD
+  RENTED
+  PENDING
+  DELISTED
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type User {
+  id: ID!
+  email: String!
+  firstName: String!
+  lastName: String!
+  phone: String!
+  role: String!
+  avatar: String!
+  bio: String!
+  emailVerified: Boolean!
+  favoritePropertyIds: [String!]
+  preferences: JSON
+  kycData: JSON
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Query {
+  me: User!
+  user(id: String!): User!
+  users(limit: Float! = 10, offset: Float! = 0): [User!]!
+  properties(limit: Float! = 10, offset: Float! = 0): [Property!]!
+  property(id: String!): Property!
+  searchProperties(input: SearchPropertyDto!): [Property!]!
+}
+
+input SearchPropertyDto {
+  types: [PropertyType!]
+  minPrice: Float
+  maxPrice: Float
+  bedrooms: Int
+  bathrooms: Int
+  city: String
+  latitude: Float
+  longitude: Float
+  radiusKm: Float
+  limit: Int! = 10
+  offset: Int! = 0
+}
+
+type Mutation {
+  register(input: RegisterDto!): String!
+  login(input: LoginDto!): String!
+  refreshToken(input: RefreshTokenDto!): String!
+  updateProfile(input: UpdateUserDto!): User!
+  updatePreferences(input: UpdatePreferencesDto!): User!
+  addFavorite(propertyId: String!): User!
+  removeFavorite(propertyId: String!): User!
+  createProperty(input: CreatePropertyDto!): Property!
+  updateProperty(id: String!, input: UpdatePropertyDto!): Property!
+  deleteProperty(id: String!): Boolean!
+}
+
+input RegisterDto {
+  email: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+  role: String! = "buyer"
+}
+
+input LoginDto {
+  email: String!
+  password: String!
+}
+
+input RefreshTokenDto {
+  refreshToken: String!
+}
+
+input UpdateUserDto {
+  firstName: String
+  lastName: String
+  phone: String
+  avatar: String
+  bio: String
+}
+
+input UpdatePreferencesDto {
+  currency: String
+  language: String
+  notifications: Boolean
+  newsletter: Boolean
+}
+
+input CreatePropertyDto {
+  title: String!
+  description: String!
+  price: Float!
+  type: PropertyType!
+  address: String!
+  city: String!
+  state: String!
+  postalCode: String!
+  country: String!
+  latitude: Float!
+  longitude: Float!
+  bedrooms: Int!
+  bathrooms: Int!
+  areaSquareFeet: Float!
+  yearBuilt: Int!
+  features: String
+  amenities: [String!]
+}
+
+input UpdatePropertyDto {
+  title: String
+  description: String
+  price: Float
+  status: PropertyStatus
+  features: String
+  amenities: [String!]
+  latitude: Float
+  longitude: Float
+}
